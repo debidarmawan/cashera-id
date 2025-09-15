@@ -36,17 +36,17 @@ const navItems: NavItem[] = [
   {
     icon: <DollarLineIcon />,
     name: "Point of Sale",
-    path: "/pos/checkout",
+    path: "/pos",
   },
   {
     icon: <BoxCubeIcon />,
     name: "Products",
-    path: "/pos/products",
+    path: "/products",
   },
   {
     icon: <UserCircleIcon />,
     name: "Sales History",
-    path: "/pos/sales",
+    path: "/sales",
   },
   {
     icon: <CalenderIcon />,
