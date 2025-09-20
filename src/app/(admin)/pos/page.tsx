@@ -1,38 +1,96 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePOS, POSHelpers } from '@/context/POSContext';
-import { Product } from '@/types/pos';
+import { Product } from '@/types/product';
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-// import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
-// import Badge from '@/components/ui/badge/Badge';
 import Button from '@/components/ui/button/Button';
 import Image from 'next/image';
 
 export default function CheckoutPage() {
   const { state, dispatch } = usePOS();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'digital'>('cash');
   const [amountReceived, setAmountReceived] = useState(0);
 
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products');
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data);
+          console.log('Products loaded:', data.length, 'products');
+        } else {
+          console.error('Failed to fetch products');
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const { subtotal, tax, total } = POSHelpers.calculateCartTotal(state.cart, state.settings.taxRate);
   const change = amountReceived - total;
 
-  const categories = ['all', ...Array.from(new Set(state.products.map(p => p.category)))];
+  const categories = ['all', ...Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[]];
   
-  const filteredProducts = state.products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.sku.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredProducts = products.filter(product => {
+    if (!searchTerm.trim()) {
+      // If no search term, just filter by category and active/stock status
+      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+      return matchesCategory && product.is_active && product.stock > 0;
+    }
+    
+    // Search in multiple fields
+    const searchLower = searchTerm.toLowerCase().trim();
+    const matchesSearch = 
+      product.name.toLowerCase().includes(searchLower) ||
+      (product.sku && product.sku.toLowerCase().includes(searchLower)) ||
+      (product.barcode && product.barcode.toLowerCase().includes(searchLower)) ||
+      (product.description && product.description.toLowerCase().includes(searchLower)) ||
+      (product.category && product.category.toLowerCase().includes(searchLower));
+    
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-    return matchesSearch && matchesCategory && product.isActive && product.stock > 0;
+    const result = matchesSearch && matchesCategory && product.is_active && product.stock > 0;
+    
+    // Debug logging for search issues
+    if (searchTerm && result) {
+      console.log('Found product:', product.name, 'for search:', searchTerm);
+    }
+    
+    return result;
   });
 
   const handleAddToCart = (product: Product) => {
     if (product.stock > 0) {
-      dispatch({ type: 'ADD_TO_CART', payload: { product, quantity: 1 } });
+      // Convert database product to POS product format
+      const posProduct = {
+        id: product.id,
+        name: product.name,
+        price: Number(product.price),
+        stock: product.stock,
+        sku: product.sku || '',
+        category: product.category || '',
+        isActive: product.is_active,
+        image: product.image || undefined,
+        description: product.description || undefined,
+        cost: product.cost ? Number(product.cost) : 0,
+        minStock: product.min_stock,
+        createdAt: new Date(product.created_at),
+        updatedAt: new Date(product.updated_at)
+      };
+      dispatch({ type: 'ADD_TO_CART', payload: { product: posProduct, quantity: 1 } });
     }
   };
 
@@ -80,13 +138,25 @@ export default function CheckoutPage() {
             {/* Search and Filter */}
             <div className="mb-6 space-y-4">
               <div className="flex gap-4">
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                />
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    placeholder="Search products by name, SKU, barcode, or description..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-4 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                  />
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
@@ -99,34 +169,57 @@ export default function CheckoutPage() {
                   ))}
                 </select>
               </div>
+              
+              {/* Debug info - remove in production */}
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                Products loaded: {products.length} | Filtered: {filteredProducts.length} | Search: &quot;{searchTerm}&quot; | Category: {selectedCategory}
+              </div>
             </div>
 
             {/* Product Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => handleAddToCart(product)}
-                >
-                  <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                    {product.image ? (
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        width={80}
-                        height={80}
-                        className="object-cover rounded-lg"
-                      />
-                    ) : (
-                      <div className="text-gray-400 text-2xl">📦</div>
-                    )}
+              {loading ? (
+                // Loading skeleton
+                Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 animate-pulse">
+                    <div className="aspect-square bg-gray-200 rounded-lg mb-3"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-6 bg-gray-200 rounded mb-1"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                   </div>
-                  <h3 className="font-semibold text-sm mb-1 truncate">{product.name}</h3>
-                  <p className="text-lg font-bold text-blue-600">Rp {product.price.toLocaleString('id-ID')}</p>
-                  <p className="text-xs text-gray-500">Stock: {product.stock}</p>
+                ))
+              ) : filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                      {product.image ? (
+                        <Image
+                          src={product.image}
+                          alt={product.name}
+                          width={80}
+                          height={80}
+                          className="object-cover rounded-lg"
+                        />
+                      ) : (
+                        <div className="text-gray-400 text-2xl">📦</div>
+                      )}
+                    </div>
+                    <h3 className="font-semibold text-sm mb-1 truncate">{product.name}</h3>
+                    <p className="text-lg font-bold text-blue-600">Rp {Number(product.price).toLocaleString('id-ID')}</p>
+                    <p className="text-xs text-gray-500">Stock: {product.stock}</p>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-8 text-gray-500">
+                  <div className="text-4xl mb-2">📦</div>
+                  <p>No products found</p>
+                  <p className="text-sm">Try adjusting your search or category filter</p>
                 </div>
-              ))}
+              )}
             </div>
           </ComponentCard>
         </div>
