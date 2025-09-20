@@ -123,7 +123,7 @@ export default function CheckoutPage() {
                     )}
                   </div>
                   <h3 className="font-semibold text-sm mb-1 truncate">{product.name}</h3>
-                  <p className="text-lg font-bold text-blue-600">${product.price.toFixed(2)}</p>
+                  <p className="text-lg font-bold text-blue-600">Rp {product.price.toLocaleString('id-ID')}</p>
                   <p className="text-xs text-gray-500">Stock: {product.stock}</p>
                 </div>
               ))}
@@ -148,7 +148,7 @@ export default function CheckoutPage() {
                     <div key={item.product.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex-1">
                         <h4 className="font-medium text-sm">{item.product.name}</h4>
-                        <p className="text-xs text-gray-500">${item.product.price.toFixed(2)} each</p>
+                        <p className="text-xs text-gray-500">Rp {item.product.price.toLocaleString('id-ID')} each</p>
                       </div>
                       <div className="flex items-center space-x-2">
                         <button
@@ -179,15 +179,15 @@ export default function CheckoutPage() {
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Subtotal:</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>Rp {subtotal.toLocaleString('id-ID')}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Tax ({(state.settings.taxRate * 100).toFixed(1)}%):</span>
-                    <span>${tax.toFixed(2)}</span>
+                    <span>Rp {tax.toLocaleString('id-ID')}</span>
                   </div>
                   <div className="flex justify-between text-lg font-bold border-t pt-2">
                     <span>Total:</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>Rp {total.toLocaleString('id-ID')}</span>
                   </div>
                 </div>
 
@@ -196,7 +196,7 @@ export default function CheckoutPage() {
                   onClick={() => setShowPaymentModal(true)}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  Checkout - ${total.toFixed(2)}
+                  Checkout - Rp {total.toLocaleString('id-ID')}
                 </Button>
               </div>
             )}
@@ -243,7 +243,7 @@ export default function CheckoutPage() {
                   />
                   {amountReceived > 0 && (
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      Change: ${change.toFixed(2)}
+                      Change: Rp {change.toLocaleString('id-ID')}
                     </p>
                   )}
                 </div>

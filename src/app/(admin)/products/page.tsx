@@ -247,7 +247,7 @@ export default function ProductsPage() {
                       {product.category}
                     </TableCell>
                     <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      ${Number(product.price).toFixed(2)}
+                      Rp {Number(product.price).toLocaleString('id-ID')}
                     </TableCell>
                     <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       <span className={product.stock <= product.min_stock ? 'text-red-600 font-semibold' : ''}>

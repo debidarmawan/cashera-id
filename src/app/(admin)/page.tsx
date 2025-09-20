@@ -22,7 +22,7 @@ export default function UnifiedDashboard() {
   const posStatCards = [
     {
       title: "Today's Sales",
-      value: `$${posStats.todaySales.toFixed(2)}`,
+      value: `Rp ${posStats.todaySales.toLocaleString('id-ID')}`,
       icon: <DollarLineIcon />,
       color: "text-green-600",
       bgColor: "bg-green-50",

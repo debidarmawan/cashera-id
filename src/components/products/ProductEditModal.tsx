@@ -172,24 +172,26 @@ export default function ProductEditModal({ product, onClose, onSave }: ProductEd
             {/* Row 3: Price and Cost */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium mb-1 text-gray-700 dark:text-gray-300">Price</label>
+                <label className="block text-xs font-medium mb-1 text-gray-700 dark:text-gray-300">Price (IDR)</label>
                 <input
                   type="number"
-                  step="0.01"
+                  step="1"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
                   className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                  placeholder="Enter price in IDR"
                   required
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium mb-1 text-gray-700 dark:text-gray-300">Cost</label>
+                <label className="block text-xs font-medium mb-1 text-gray-700 dark:text-gray-300">Cost (IDR)</label>
                 <input
                   type="number"
-                  step="0.01"
+                  step="1"
                   value={formData.cost}
                   onChange={(e) => setFormData({ ...formData, cost: Number(e.target.value) })}
                   className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                  placeholder="Enter cost in IDR"
                 />
               </div>
             </div>

@@ -107,7 +107,7 @@ export default function ProductDetailModal({ product, onClose, onEdit }: Product
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
                   <div className="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">Price</div>
-                  <div className="text-lg font-bold text-blue-900 dark:text-blue-100">${Number(product.price).toFixed(2)}</div>
+                  <div className="text-lg font-bold text-blue-900 dark:text-blue-100">Rp {Number(product.price).toLocaleString('id-ID')}</div>
                 </div>
                 <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
                   <div className="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide">Stock</div>
@@ -132,7 +132,7 @@ export default function ProductDetailModal({ product, onClose, onEdit }: Product
                   <div>
                     <span className="text-gray-500 dark:text-gray-400">Cost:</span>
                     <span className="ml-2 font-medium text-gray-900 dark:text-white">
-                      {product.cost ? `$${Number(product.cost).toFixed(2)}` : 'Not set'}
+                      {product.cost ? `Rp ${Number(product.cost).toLocaleString('id-ID')}` : 'Not set'}
                     </span>
                   </div>
                   <div>

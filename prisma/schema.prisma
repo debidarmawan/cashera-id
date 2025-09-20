@@ -99,7 +99,7 @@ model POSSettings {
   store_phone        String?
   store_email        String?
   tax_rate           Decimal  @db.Decimal(5, 4) @default(0.1)
-  currency          String   @default("USD")
+  currency          String   @default("IDR")
   receipt_header     String?
   receipt_footer     String?
   low_stock_threshold Int      @default(10)

@@ -13,7 +13,7 @@ async function main() {
 			store_phone: '+1 (555) 123-4567',
 			store_email: 'info@cashera.com',
 			tax_rate: 0.1,
-			currency: 'USD',
+			currency: 'IDR',
 			receipt_header: 'Thank you for your business!',
 			receipt_footer: 'Visit us again soon!',
 			low_stock_threshold: 10,

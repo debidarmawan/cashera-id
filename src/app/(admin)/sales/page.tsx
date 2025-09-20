@@ -206,7 +206,7 @@ export default function SalesPage() {
                       {sale.items.length} item(s)
                     </TableCell>
                     <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      ${sale.total.toFixed(2)}
+                      Rp {sale.total.toLocaleString('id-ID')}
                     </TableCell>
                     <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <div className="flex items-center">
