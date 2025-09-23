@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import ComponentCard from '@/components/common/ComponentCard';
-import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import Badge from '@/components/ui/badge/Badge';
 import Button from '@/components/ui/button/Button';
@@ -138,7 +137,6 @@ export default function ProductsPage() {
   if (loading) {
     return (
       <div>
-        <PageBreadcrumb pageTitle="Product Management" />
         <div className="flex items-center justify-center h-64">
           <div className="text-lg text-gray-600 dark:text-gray-400">Loading products...</div>
         </div>
@@ -148,8 +146,6 @@ export default function ProductsPage() {
 
   return (
     <div>
-      <PageBreadcrumb pageTitle="Product Management" />
-      
       <div className="space-y-6">
         {/* Search and Filter */}
         <ComponentCard title="Search & Filter">

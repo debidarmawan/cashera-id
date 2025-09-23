@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { usePOS } from '@/context/POSContext';
 import ComponentCard from '@/components/common/ComponentCard';
-import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import Badge from '@/components/ui/badge/Badge';
 // import Button from '@/components/ui/button/Button';
@@ -74,8 +73,6 @@ export default function SalesPage() {
 
   return (
     <div>
-      <PageBreadcrumb pageTitle="Sales History" />
-      
       <div className="space-y-6">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
